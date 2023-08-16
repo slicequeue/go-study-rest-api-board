@@ -11,5 +11,5 @@ type Validator struct {
 }
 
 func (v *Validator) Validate(i interface{}) error {
-	return v.validator.Struct(i)
+	return v.validator.Struct(i) // 구조체 검증기
 }
