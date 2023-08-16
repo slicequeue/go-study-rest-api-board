@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/slicequeue/go-study-rest-api-board/db"
 	"github.com/slicequeue/go-study-rest-api-board/handler"
 	"github.com/slicequeue/go-study-rest-api-board/router"
 )
@@ -9,8 +10,8 @@ func main() {
 	r := router.New()
 
 	// r.GET("/swagger/*", echoSwagger.WrapHandler) // TODO
-	// d := db.New() // TODO
-	// db.AutoMigrate(d)
+	d := db.New()
+	db.AutoMigrate(d)
 
 	v1 := r.Group("/api") // TODO
 	h := handler.NewHandler()
