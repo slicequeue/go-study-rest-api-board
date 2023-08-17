@@ -24,4 +24,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	// 기본 헬스체크 경로 등록
 	v1.GET("", healthCheck)
 	v1.GET("/health", healthCheck)
+
+	guestUsers := v1.Group("/users")
+	guestUsers.POST("", h.SignUp)
 }
