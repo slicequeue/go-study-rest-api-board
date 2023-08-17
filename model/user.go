@@ -9,9 +9,9 @@ import (
 
 type User struct {
 	gorm.Model
-	Email string `gorm:"unique_index;not null"`
-	Username string `gorm:"not null"`
-	Password   string `gorm:"not null"`
+	Email string `gorm:"size:256;uniqueIndex;not null"`
+	Username string `gorm:"size:256;not null"`
+	Password   string `gorm:"size:1024;not null"`
 	Followers []Follow `gorm:"foreignkey:FollowingID"`
 	Followings []Follow `gorm:"foreignkey:FollowerID"`
 }
