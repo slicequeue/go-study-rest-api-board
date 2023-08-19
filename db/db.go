@@ -23,5 +23,7 @@ func New() *gorm.DB {
 func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(
 		&model.User{},
+		&model.Board{},
+		&model.Document{},
 	)
 }
