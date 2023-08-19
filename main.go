@@ -14,7 +14,6 @@ func main() {
 	d := db.New()
 	db.AutoMigrate(d)
 
-
 	v1 := r.Group("/api") // TODO
 	us := store.NewUserStore(d)
 	h := handler.NewHandler(us)
