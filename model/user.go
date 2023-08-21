@@ -36,6 +36,15 @@ func (u *User) CheckPassword(plain string) bool {
 	return err == nil
 }
 
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	hashedPassword, err := u.HashPassword(u.Password)
+	if err != nil {
+		return err
+	}
+	u.Password = hashedPassword
+	return nil
+}
+
 // FollowedBy Followings should be pre loaded
 func (u *User) FollowedBy(id uint) bool {
 	if u.Followers == nil {
