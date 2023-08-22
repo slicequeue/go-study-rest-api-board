@@ -11,7 +11,7 @@ import (
 )
 
 func New() *gorm.DB {
-	dsn := "root:1234@tcp(127.0.0.1:3306)/go-board?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:admin@tcp(127.0.0.1:3306)/go-board?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	sqlDB,_ := db.DB()
 	sqlDB.SetMaxIdleConns(2) // 10
@@ -27,13 +27,14 @@ func New() *gorm.DB {
 var testDB *gorm.DB
 
 func TestDB() *gorm.DB {
-	dsn := "root:1234@tcp(127.0.0.1:3306)/go-board-test?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	dsn := "root:admin@tcp(127.0.0.1:3306)/go-board-test?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	testDB = db
 	if err != nil {
 		log.Fatalln("storage err:", err)
 	}
-	testDB.Logger.LogMode(logger.Info)
 	return db
 }
 
