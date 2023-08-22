@@ -42,12 +42,34 @@ func TestUserCRUD(t *testing.T) {
 	var resultUser model.User;
 	readResult := d.Where("id = ?", user.ID).First(&resultUser)
 	assert.NoError(t, readResult.Error)
+	assert.EqualValues(t, resultUser.ID, user.ID)
+	assert.EqualValues(t, resultUser.Email, user.Email)
+	assert.EqualValues(t, resultUser.Password, user.Password)
 
-	// TODO: Update
+	// Update
+	changePassword := "4321"
+	changeEmail := "slicequeue@gmail.com"
+	user.Password = changePassword
+	user.Email = changeEmail
+	updateResult := d.Updates(&user)
+	assert.NoError(t, updateResult.Error)
+	assert.NotEqualValues(t, user.Password, changePassword)
+	assert.EqualValues(t, user.Email, changeEmail)
 
-	// TODO: Softly Delete
+	// Softly Delete
+	softDeleteResult1 := d.Delete(&user) // 모델을 포함하고 있기에 부드러운 삭제 가능
+	assert.NoError(t, softDeleteResult1.Error)
+	softDeleteResult2 := d.Where("id = ?", user.ID).First(&user)
+	assert.EqualError(t, softDeleteResult2.Error, gorm.ErrRecordNotFound.Error())
+	softDeleteResult3 := d.Unscoped().Where("id = ?", user.ID).First(&user)
+	assert.NoError(t, softDeleteResult3.Error)
+	assert.EqualValues(t, user.Email, changeEmail)
 
-	// TODO: Hard Delete
+	// Hard Delete
+	hardDeleteResult1 := d.Unscoped().Delete(&user) // Unscoped() 이용하여 삭제 가능
+	assert.NoError(t, hardDeleteResult1.Error)
+	hardDeleteResult2 := d.Where("id = ?", user.ID).First(&user)
+	assert.EqualError(t, hardDeleteResult2.Error, gorm.ErrRecordNotFound.Error())
 
 	tearDown()
 
