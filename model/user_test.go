@@ -39,7 +39,7 @@ func TestUserCRUD(t *testing.T) {
 	fmt.Println("after insert user:", user)
 
 	// Read
-	var resultUser model.User;
+	var resultUser model.User
 	readResult := d.Where("id = ?", user.ID).First(&resultUser)
 	assert.NoError(t, readResult.Error)
 	assert.EqualValues(t, resultUser.ID, user.ID)

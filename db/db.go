@@ -39,7 +39,7 @@ func TestDB() *gorm.DB {
 }
 
 func DropTestDB() error {
-	testDB.Exec("SET FOREIGN_KEY_CHECKS = 0")
+	testDB.Exec("SET FOREIGN_KEY_CHECKS = 0;")
 	testDB.Exec("SET @tables = NULL")
 	testDB.Exec("SELECT GROUP_CONCAT(table_name) INTO @tables FROM information_schema.tables WHERE table_schema = (SELECT DATABASE())")
 	testDB.Exec("SET FOREIGN_KEY_CHECKS = 0")
