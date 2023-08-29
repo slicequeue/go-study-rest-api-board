@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -34,6 +35,28 @@ func (u *User) HashPassword(plain string) (string, error) {
 func (u *User) CheckPassword(plain string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plain))
 	return err == nil
+}
+
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	fmt.Println(">>>>")
+	fmt.Println("BeforeCreate >> u.Password:", u.Password)
+	hashedPassword, err := u.HashPassword(u.Password)
+	if err != nil {
+		return err
+	}
+	u.Password = hashedPassword
+	return nil
+}
+
+func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
+	fmt.Println(">>>>")
+	fmt.Println("BeforeUpdate >> u.Password:", u.Password)
+	hashedPassword, err := u.HashPassword(u.Password)
+	if err != nil {
+		return err
+	}
+	u.Password = hashedPassword
+	return nil
 }
 
 // FollowedBy Followings should be pre loaded

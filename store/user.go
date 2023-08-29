@@ -26,6 +26,17 @@ func (us *UserStore) GetById(id uint) (*model.User, error) {
 	return &m, nil
 }
 
+func (us *UserStore) GetByEmail(email string) (*model.User, error) {
+	var m model.User
+	if err := us.db.Where("email = ?", email).First(&m).Error; err != nil {
+		if gorm.ErrRecordNotFound == err {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &m, nil
+}
+
 func (us *UserStore) Create(u *model.User) (err error) {
 	return us.db.Create(u).Error
 }

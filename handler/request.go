@@ -23,10 +23,21 @@ func (r *userRegisterRequest) bind(c echo.Context, u *model.User) error {
 	}
 	u.Username = r.User.Username
 	u.Email = r.User.Email
-	h, err := u.HashPassword(r.User.Password)
-	if err != nil {
+	u.Password = r.User.Password
+	return nil
+}
+
+type SignInRequest struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+}
+
+func (r *SignInRequest) bind(c echo.Context) error {
+	if err := c.Bind(r); err != nil {
 		return err
 	}
-	u.Password = h
+	if err := c.Validate(r); err != nil {
+		return err
+	}
 	return nil
 }

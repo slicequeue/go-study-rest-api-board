@@ -27,4 +27,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 
 	guestUsers := v1.Group("/users")
 	guestUsers.POST("", h.SignUp)
+
+	auth := v1.Group("/auth")
+	auth.POST("/signin", h.SignIn)
 }
