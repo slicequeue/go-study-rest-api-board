@@ -8,7 +8,7 @@ import (
 )
 
 type Error struct {
-	Errors map[string]interface{} `json.errors`
+	Errors map[string]interface{} `json:"errors"`
 }
 
 func NewError(err error) Error {
