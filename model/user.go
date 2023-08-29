@@ -10,17 +10,17 @@ import (
 
 type User struct {
 	gorm.Model
-	Email string `gorm:"size:256;uniqueIndex;not null"`
-	Username string `gorm:"size:256;not null"`
-	Password   string `gorm:"size:1024;not null"`
-	Followers []Follow `gorm:"foreignkey:FollowingID"`
+	Email      string   `gorm:"size:256;uniqueIndex;not null"` // FIXME: soft delete 의 경우 지운 것과 비교시 유니크 인덱스 설정해 놓은 부분 삭제한 것과 비교하여 문제 발생할 수 있음
+	Username   string   `gorm:"size:256;not null"`
+	Password   string   `gorm:"size:1024;not null"`
+	Followers  []Follow `gorm:"foreignkey:FollowingID"`
 	Followings []Follow `gorm:"foreignkey:FollowerID"`
 }
 
 type Follow struct {
-	Follower User
-	FollowerID uint `gorm:"primary_key" sql:"type:int not null"`
-	Following User
+	Follower    User
+	FollowerID  uint `gorm:"primary_key" sql:"type:int not null"`
+	Following   User
 	FollowingID uint `gorm:"primary_key" sql:"type:int not null"`
 }
 
@@ -38,8 +38,6 @@ func (u *User) CheckPassword(plain string) bool {
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	fmt.Println(">>>>")
-	fmt.Println("BeforeCreate >> u.Password:", u.Password)
 	hashedPassword, err := u.HashPassword(u.Password)
 	if err != nil {
 		return err
@@ -49,8 +47,6 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
-	fmt.Println(">>>>")
-	fmt.Println("BeforeUpdate >> u.Password:", u.Password)
 	hashedPassword, err := u.HashPassword(u.Password)
 	if err != nil {
 		return err
