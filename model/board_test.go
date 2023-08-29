@@ -3,7 +3,6 @@ package model_test
 import (
 	"testing"
 
-	"github.com/slicequeue/go-study-rest-api-board/db"
 	"github.com/slicequeue/go-study-rest-api-board/model"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
@@ -199,5 +198,5 @@ func TestBoardDocumentAssociation_case1(t *testing.T) {
 
 	// Create with association
 	d.Updates(&board1)
-	tearDown() 
+	tearDown()
 }
