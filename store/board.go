@@ -15,6 +15,15 @@ func NewBoardStore(db *gorm.DB) *BoardStore {
 	}
 }
 
+func (bs *BoardStore) GetAll() ([]model.Board, error) {
+	var boards []model.Board
+	// TODO .Preload("Documents") 부분 추후 SQL 자체 실행으로 성능 강화
+	if err := bs.db.Model(&model.Board{}).Preload("User").Preload("Documents").Find(&boards).Error; err != nil {
+		return nil, err
+	}
+	return boards, nil
+}
+
 func (bs *BoardStore) GetById(id uint) (*model.Board, error) {
 	var m model.Board
 	if err := bs.db.First(&m, id).Error; err != nil {
