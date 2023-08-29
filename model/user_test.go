@@ -1,7 +1,6 @@
 package model_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/slicequeue/go-study-rest-api-board/db"
@@ -33,10 +32,10 @@ func TestUserCRUD(t *testing.T) {
 		Username: "slicequeue",
 		Password: "1234",
 	}
-	fmt.Println("prev insert user:", user)
+	// fmt.Println("prev insert user:", user)
 	createResult := d.Create(&user)
 	assert.NoError(t, createResult.Error)
-	fmt.Println("after insert user:", user)
+	// fmt.Println("after insert user:", user)
 
 	// Read
 	var resultUser model.User

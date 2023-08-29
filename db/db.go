@@ -29,7 +29,7 @@ var testDB *gorm.DB
 func TestDB() *gorm.DB {
 	dsn := "root:admin@tcp(127.0.0.1:3306)/go-board-test?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: logger.Default.LogMode(logger.Silent),
 	})
 	testDB = db
 	if err != nil {
