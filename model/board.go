@@ -22,8 +22,8 @@ func (b *Board) AddDocument(d *Document) {
 }
 
 type Document struct {
-	ID       uint `gorm:"primarykey;autoIncrement"`
-	BoardID  uint
+	ID       uint     `gorm:"primarykey;autoIncrement"`
+	BoardID  uint     // `gorm:"boardId;not null"`
 	Board    Board    `gorm:"references:ID;not null"`
 	Title    string   `gorm:"size:256;not null"`
 	Content  string   `gorm:"not null"`

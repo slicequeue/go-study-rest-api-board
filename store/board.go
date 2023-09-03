@@ -24,9 +24,9 @@ func (bs *BoardStore) GetAll() ([]model.Board, error) {
 	return boards, nil
 }
 
-func (bs *BoardStore) GetById(id uint) (*model.Board, error) {
+func (bs *BoardStore) GetById(id int) (*model.Board, error) {
 	var m model.Board
-	if err := bs.db.First(&m, id).Error; err != nil {
+	if err := bs.db.Preload("User").Preload("Documents").First(&m, id).Error; err != nil {
 		if gorm.ErrRecordNotFound == err {
 			return nil, nil
 		}
@@ -46,4 +46,42 @@ func (bs *BoardStore) Update(b *model.Board) error {
 func (bs *BoardStore) AddDocument(b *model.Board, d *model.Document) error {
 	(*b).AddDocument(d)
 	return bs.Update(b)
+}
+
+// --- board documents --- //
+type PageInfo struct {
+	Page          uint
+	Size          uint
+	IsFirst       bool
+	IsLast        bool
+	TotalPages    uint
+	TotalElements uint
+}
+
+func (bs *BoardStore) GetBoardDocuments(boardId int, page int, size int) ([]*model.Document, *PageInfo, error) {
+	d := model.Document{}
+	var count int64
+	if err := bs.db.Model(&d).Where("board_id").Count(&count).Error; err != nil {
+		return nil, nil, err
+	}
+
+	limit := (page - 1) * size
+	offset := page * size
+	var documents []*model.Document
+	if err := bs.db.Preload("User").Limit(limit).Offset(offset).Where("board_id = ?", boardId).Find(&documents).Error; err != nil {
+		return nil, nil, err
+	}
+
+	totalPages := uint(count/int64(size)) + 1 // .(int)
+
+	pageDto := PageInfo{
+		Page:          uint(page),
+		Size:          uint(size),
+		IsFirst:       page == 1,
+		IsLast:        totalPages == uint(page),
+		TotalPages:    totalPages,
+		TotalElements: uint(count),
+	}
+
+	return documents, &pageDto, nil
 }

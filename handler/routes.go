@@ -33,4 +33,6 @@ func (h *Handler) Register(v1 *echo.Group) {
 
 	board := v1.Group("/boards")
 	board.GET("", h.GetBoards)
+	board.GET("/:boardId", h.GetBoardDetail)
+	board.GET("/:boardId/documents", h.GetBoardDocuments)
 }
