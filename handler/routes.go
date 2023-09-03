@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/labstack/echo"
+	"github.com/slicequeue/go-study-rest-api-board/router/middleware"
+	"github.com/slicequeue/go-study-rest-api-board/utils"
 )
 
 type HealthCheckInfo struct {
@@ -21,6 +23,7 @@ func healthCheck(c echo.Context) error {
 }
 
 func (h *Handler) Register(v1 *echo.Group) {
+	jwtMiddleware := middleware.JWT(utils.JWTSecret)
 	// 기본 헬스체크 경로 등록
 	v1.GET("", healthCheck)
 	v1.GET("/health", healthCheck)
@@ -31,8 +34,9 @@ func (h *Handler) Register(v1 *echo.Group) {
 	auth := v1.Group("/auth")
 	auth.POST("/signin", h.SignIn)
 
-	board := v1.Group("/boards")
+	board := v1.Group("/boards", jwtMiddleware)
 	board.GET("", h.GetBoards)
 	board.GET("/:boardId", h.GetBoardDetail)
+	board.POST("/:boardId/documents", h.CreateBoardDocument)
 	board.GET("/:boardId/documents", h.GetBoardDocuments)
 }

@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo"
+	"github.com/slicequeue/go-study-rest-api-board/model"
 	"github.com/slicequeue/go-study-rest-api-board/utils"
 )
 
@@ -52,6 +53,36 @@ func (h *Handler) GetBoardDocuments(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, utils.NewError(err))
 	}
 	return c.JSON(http.StatusOK, newBoardDocumentsResponse(board, boardDocuments, pageInfo))
+}
+
+func (h *Handler) CreateBoardDocument(c echo.Context) error {
+	var document model.Document
+	req := new(BoardDocumentRequest)
+	if err := req.bind(c, &document); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
+	}
+	fmt.Println("model.Document", document)
+	board, boardErr := h.boardStore.GetById(int(document.BoardID))
+	if boardErr != nil {
+		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(boardErr))
+	}
+	if board == nil {
+		return c.String(http.StatusNotFound, "board not found")
+	}
+	if err := h.documentStore.Create(&document); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
+	}
+	// 아래 코드 이슈가 있음! - DB에 삽입까지는 잘 되나 &document 넘겨준 객체에 PK 값이 제대로 나오지 않음..
+	// if err := h.boardStore.AddDocument(board, &document); err != nil {
+	// 	return c.JSON(http.StatusUnprocessableEntity, utils.NewError(boardErr))
+	// }
+	// TODO 너저분하다 Create 이후 User Preload 가 되지 않아 직접 조회하는 형태라니...
+	resultDocument, documentFoundErr := h.boardStore.GetBoardDocument(board.ID, document.ID)
+	if documentFoundErr != nil {
+		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(documentFoundErr))
+	}
+	fmt.Println("resultDocument", resultDocument)
+	return c.JSON(http.StatusOK, newDocumentResponse(resultDocument))
 }
 
 // --- private --- //

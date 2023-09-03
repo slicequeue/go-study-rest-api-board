@@ -11,10 +11,10 @@ import (
 
 type (
 	JWTConfig struct {
-		Skipper   Skipper
+		Skipper    Skipper
 		SigningKey interface{}
 	}
-	Skipper func(c echo.Context) bool
+	Skipper      func(c echo.Context) bool
 	jwtExtractor func(echo.Context) (string, error)
 )
 
@@ -42,8 +42,8 @@ func JWTWithConfig(config JWTConfig) echo.MiddlewareFunc {
 				}
 				return c.JSON(http.StatusUnauthorized, utils.NewError(err))
 			}
-			token, err := jwt.Parse(auth, func (token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {  // TODO 무슨 문법이 이래?
+			token, err := jwt.Parse(auth, func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok { // TODO 무슨 문법이 이래?
 					return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 				}
 				return config.SigningKey, nil

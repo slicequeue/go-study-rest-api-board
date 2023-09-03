@@ -12,8 +12,10 @@ import (
 
 func New() *gorm.DB {
 	dsn := "root:admin@tcp(127.0.0.1:3306)/go-board?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	sqlDB,_ := db.DB()
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		// Logger: logger.Default.LogMode(logger.Info),
+	})
+	sqlDB, _ := db.DB()
 	sqlDB.SetMaxIdleConns(2) // 10
 	sqlDB.SetMaxOpenConns(5) // 100
 	sqlDB.SetConnMaxLifetime(time.Hour)

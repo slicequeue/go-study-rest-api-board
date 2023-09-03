@@ -1,8 +1,11 @@
 package handler
 
 import (
+	"errors"
+
 	"github.com/labstack/echo"
 	"github.com/slicequeue/go-study-rest-api-board/model"
+	"github.com/slicequeue/go-study-rest-api-board/utils"
 )
 
 type userRegisterRequest struct {
@@ -39,5 +42,34 @@ func (r *SignInRequest) bind(c echo.Context) error {
 	if err := c.Validate(r); err != nil {
 		return err
 	}
+	return nil
+}
+
+type BoardDocumentRequest struct {
+	Id      string `json:"id"`
+	Title   string `json:"title" validate:"required"`
+	Content string `json:"content"`
+}
+
+func (r *BoardDocumentRequest) bind(c echo.Context, d *model.Document) error {
+	if err := c.Bind(r); err != nil {
+		return err
+	}
+	if err := c.Validate(r); err != nil {
+		return err
+	}
+	boardId := utils.GetParamValue(c, "boardId", "integer", nil).(int)
+	if boardId == 0 {
+		return errors.New("boardId must not be null.")
+	}
+	userId := c.Get("user")
+	if userId == nil {
+		return errors.New("need siginin.")
+	}
+	d.BoardID = uint(boardId)
+	d.Title = r.Title
+	d.Content = r.Content
+	d.Author.UserId = userId.(uint)
+
 	return nil
 }

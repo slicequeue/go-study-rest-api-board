@@ -17,8 +17,9 @@ func main() {
 	v1 := r.Group("/api") // TODO
 	us := store.NewUserStore(d)
 	as := store.NewAuthStore(d, us)
+	ds := store.NewDocumentStore(d)
 	bs := store.NewBoardStore(d)
-	h := handler.NewHandler(as, us, bs)
+	h := handler.NewHandler(as, us, bs, ds)
 	h.Register(v1)
 	r.Logger.Fatal(r.Start("127.0.0.1:8585"))
 

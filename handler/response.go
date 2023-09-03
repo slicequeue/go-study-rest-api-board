@@ -105,6 +105,7 @@ type BoardDocumentsResponseDto struct {
 type DocumentDto struct {
 	Id        uint      `json:"id"`
 	Title     string    `json:"title"`
+	Content   string    `json:"content"`
 	Author    UserDto   `json:"author"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -148,4 +149,16 @@ func newBoardDocumentsResponse(board *model.Board, boardDocuments []*model.Docum
 	boardDocumentsResponseDto.Documents = docuements
 
 	return boardDocumentsResponseDto
+}
+
+func newDocumentResponse(document *model.Document) *DocumentDto {
+	documentDto := new(DocumentDto)
+	documentDto.Id = document.ID
+	documentDto.Title = document.Title
+	documentDto.Content = document.Content
+	documentDto.Author.Email = document.Author.User.Email
+	documentDto.Author.Username = document.Author.User.Username
+	documentDto.CreatedAt = document.RecordAt.CreatedAt
+	documentDto.UpdatedAt = document.RecordAt.UpdatedAt
+	return documentDto
 }

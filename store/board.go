@@ -1,6 +1,8 @@
 package store
 
 import (
+	"fmt"
+
 	"github.com/slicequeue/go-study-rest-api-board/model"
 	"gorm.io/gorm"
 )
@@ -36,7 +38,7 @@ func (bs *BoardStore) GetById(id int) (*model.Board, error) {
 }
 
 func (bs *BoardStore) Create(b *model.Board) error {
-	return bs.db.Model(b).Updates(b).Error
+	return bs.db.Model(b).Create(b).Error
 }
 
 func (bs *BoardStore) Update(b *model.Board) error {
@@ -46,6 +48,17 @@ func (bs *BoardStore) Update(b *model.Board) error {
 func (bs *BoardStore) AddDocument(b *model.Board, d *model.Document) error {
 	(*b).AddDocument(d)
 	return bs.Update(b)
+}
+
+func (bs *BoardStore) GetBoardDocument(boardId uint, documentId uint) (*model.Document, error) {
+	var d model.Document
+	if err := bs.db.Preload("User").Where("board_id = ? AND id = ?", boardId, documentId).First(&d).Error; err != nil {
+		if gorm.ErrRecordNotFound == err {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &d, nil
 }
 
 // --- board documents --- //
@@ -65,14 +78,15 @@ func (bs *BoardStore) GetBoardDocuments(boardId int, page int, size int) ([]*mod
 		return nil, nil, err
 	}
 
-	limit := (page - 1) * size
-	offset := page * size
+	offset := (page - 1) * size
+	limit := size
 	var documents []*model.Document
 	if err := bs.db.Preload("User").Limit(limit).Offset(offset).Where("board_id = ?", boardId).Find(&documents).Error; err != nil {
 		return nil, nil, err
 	}
+	fmt.Println(documents)
 
-	totalPages := uint(count/int64(size)) + 1 // .(int)
+	totalPages := uint(count / int64(size))
 
 	pageDto := PageInfo{
 		Page:          uint(page),
